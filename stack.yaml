@@ -1,0 +1,11 @@
+resolver: nightly-2016-02-23
+
+packages:
+  - '.'
+  - '../luminance'
+
+extra-deps: []
+
+flags: {}
+
+extra-package-dbs: []
