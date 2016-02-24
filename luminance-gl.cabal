@@ -6,7 +6,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Dimitri Sabadie <dimitri.sabadie@gmail.com>
 maintainer:          Dimitri Sabadie <dimitri.sabadie@gmail.com>
--- copyright:           
+copyright:           Dimitri Sabadie
 category:            Graphics
 build-type:          Simple
 extra-source-files:  README.md
