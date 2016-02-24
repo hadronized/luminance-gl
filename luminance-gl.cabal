@@ -31,6 +31,7 @@ library
                      , Graphics.Luminance.Driver.GL33.Framebuffer
                      , Graphics.Luminance.Driver.GL33.Pixel
                      , Graphics.Luminance.Driver.GL33.Texture
+                     , Graphics.Luminance.Driver.GL33.Texture1D
                      , Graphics.Luminance.Driver.GL33.Texture2D
 
   build-depends:       base         >= 4.8  && < 4.9
