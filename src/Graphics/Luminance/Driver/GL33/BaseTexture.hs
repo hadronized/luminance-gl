@@ -54,6 +54,28 @@ class Texture t where
   type TextureSize t :: *
   type TextureOffset t :: *
   fromBaseTexture :: BaseTexture -> t
+  toBaseTexture :: t -> BaseTexture
+  textureTypeEnum :: proxy t -> GLenum
+  textureSize :: t -> TextureSize t
+  textureStorage :: proxy t
+                 -> GLuint -- texture ID
+                 -> GLint -- levels
+                 -> TextureSize t -- size of the texture
+                 -> IO ()
+  transferTexelsSub :: (Storable a)
+                    => proxy t
+                    -> GLuint -- texture ID
+                    -> TextureOffset t -- offset
+                    -> TextureSize t -- size
+                    -> Vector a
+                    -> IO ()
+  fillTextureSub :: (Storable a)
+                 => proxy t
+                 -> GLuint
+                 -> TextureOffset t -- offset
+                 -> TextureSize t -- size
+                 -> Vector a
+                 -> IO ()
 
 createTexture :: forall m t. (MonadIO m,MonadResource m,Texture t)
               => TextureSize t
@@ -71,7 +93,7 @@ createTexture size levels sampling = do
       textureStorage (Proxy :: Proxy t) tid (fromIntegral levels) size
       pure tid
     _ <- register $ with tid (glDeleteTextures 1)
-    pure $ fromBaseTexture (BaseTexture tid) size
+    pure $ fromBaseTexture (BaseTexture tid)
   where
     target = textureTypeEnum (Proxy :: Proxy t)
 
@@ -115,7 +137,6 @@ uploadSub tex offset size autolvl texels = liftIO $ do
   where
     tid = baseTextureID (toBaseTexture tex)
 
--- |Fill a subpart of the texture’s storage with a given value.
 fillSub :: forall a m t. (MonadIO m,Storable a,Texture t)
         => t
         -> TextureOffset t
