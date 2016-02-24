@@ -27,6 +27,7 @@ import Foreign.Ptr ( Ptr, castPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 import Graphics.GL
 import Graphics.Luminance.RW
+import Numeric.Natural ( Natural )
 
 -- Create a new buffer and return its GPU address by mapping it to a @Ptr ()@.
 mkBuffer :: (MonadIO m,MonadResource m)
@@ -103,8 +104,8 @@ newtype BuildBuffer rw a = BuildBuffer {
   } deriving (Applicative,Functor,Monad)
 
 -- |Create a new 'Buffer' by providing the number of wished elements.
-newRegion :: forall rw a. (Storable a) => Word32 -> BuildBuffer rw (Buffer rw a)
-newRegion size = BuildBuffer $ do
+createRegion :: forall rw a. (Storable a) => Natural -> BuildBuffer rw (Buffer rw a)
+createRegion size = BuildBuffer $ do
     offset <- get
     put $ offset + fromIntegral size * sizeOf (undefined :: a)
     (buffer,_) <- ask
