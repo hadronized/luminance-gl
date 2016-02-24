@@ -27,6 +27,8 @@ library
   exposed-modules:     Graphics.Luminance.Driver.GL33
 
   other-modules:       Graphics.Luminance.Driver.GL33.Buffer
+                     , Graphics.Luminance.Driver.GL33.Cubemap
+                     , Graphics.Luminance.Driver.GL33.CubemapArray
                      , Graphics.Luminance.Driver.GL33.Debug
                      , Graphics.Luminance.Driver.GL33.Framebuffer
                      , Graphics.Luminance.Driver.GL33.Pixel
