@@ -11,5 +11,3 @@
 module Graphics.Luminance.Driver.GL33 (
     -- *
   ) where
-
-import Graphics.Luminance.Core.Driver ( Driver(..) )
