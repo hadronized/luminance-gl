@@ -17,10 +17,10 @@ import Data.Foldable ( for_ )
 import Data.Proxy ( Proxy(..) )
 import Data.Vector.Storable ( unsafeWith )
 import Foreign.Ptr ( castPtr, nullPtr )
-import Graphics.Luminance.Core.Texture ( BaseTexture(..), Texture(..) )
-import Graphics.Luminance.Pixel ( Pixel(..) )
+import Graphics.Luminance.Driver.GL33.Debug
+import Graphics.Luminance.Driver.GL33.Texture ( BaseTexture(..), Texture(..) )
+import Graphics.Luminance.Driver.GL33.Pixel ( Pixel(..) )
 import Graphics.GL
-import Graphics.Luminance.Core.Debug
 import Numeric.Natural ( Natural )
 
 -- |A 2D texture.

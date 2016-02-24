@@ -11,7 +11,7 @@
 -- Portability : portable
 -----------------------------------------------------------------------------
 
-module Graphics.Luminance.Driver.GL33.BaseTexture where
+module Graphics.Luminance.Driver.GL33.Texture where
 
 import Control.Monad ( when )
 import Control.Monad.IO.Class ( MonadIO(..) )
@@ -53,7 +53,7 @@ newtype BaseTexture = BaseTexture { baseTextureID  :: GLuint } deriving (Eq,Show
 class Texture t where
   type TextureSize t :: *
   type TextureOffset t :: *
-  fromBaseTexture :: BaseTexture -> t
+  fromBaseTexture :: BaseTexture -> TextureSize t -> t
   toBaseTexture :: t -> BaseTexture
   textureTypeEnum :: proxy t -> GLenum
   textureSize :: t -> TextureSize t
@@ -93,7 +93,7 @@ createTexture size levels sampling = do
       textureStorage (Proxy :: Proxy t) tid (fromIntegral levels) size
       pure tid
     _ <- register $ with tid (glDeleteTextures 1)
-    pure $ fromBaseTexture (BaseTexture tid)
+    pure $ fromBaseTexture (BaseTexture tid) size
   where
     target = textureTypeEnum (Proxy :: Proxy t)
 
