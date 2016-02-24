@@ -32,6 +32,7 @@ library
                      , Graphics.Luminance.Driver.GL33.Pixel
                      , Graphics.Luminance.Driver.GL33.Texture
                      , Graphics.Luminance.Driver.GL33.Texture1D
+                     , Graphics.Luminance.Driver.GL33.Texture1DArray
                      , Graphics.Luminance.Driver.GL33.Texture2D
                      , Graphics.Luminance.Driver.GL33.Texture2DArray
                      , Graphics.Luminance.Driver.GL33.Texture3D
