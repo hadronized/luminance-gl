@@ -39,14 +39,15 @@ library
                      , Graphics.Luminance.Driver.GL33.Texture2DArray
                      , Graphics.Luminance.Driver.GL33.Texture3D
 
-  build-depends:       base         >= 4.8  && < 4.9
-                     , either       >= 4.4  && < 4.5
-                     , gl           >= 0.7  && < 0.8
-                     , luminance    >= 0.11 && < 0.12
-                     , mtl          >= 2.2  && < 2.3
-                     , resourcet    >= 1.1  && < 1.2
-                     , transformers >= 0.4  && < 0.5
-                     , vector       >= 0.11 && < 0.12
+  build-depends:       base              >= 4.8  && < 4.9
+                     , either            >= 4.4  && < 4.5
+                     , gl                >= 0.7  && < 0.8
+                     , luminance         >= 0.11 && < 0.12
+                     , mtl               >= 2.2  && < 2.3
+                     , resourcet         >= 1.1  && < 1.2
+                     , transformers      >= 0.4  && < 0.5
+                     , transformers-base >= 0.4  && < 0.5
+                     , vector            >= 0.11 && < 0.12
 
   hs-source-dirs:      src
 

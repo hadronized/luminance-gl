@@ -19,7 +19,6 @@ import Control.Monad.Trans.Resource ( MonadResource, register )
 import Data.Bits ( (.|.) )
 import Data.Foldable ( toList )
 import Data.Proxy ( Proxy(..) )
-import Data.Word ( Word32 )
 import Foreign.Marshal.Alloc ( alloca )
 import Foreign.Marshal.Array ( peekArray, pokeArray )
 import Foreign.Marshal.Utils ( with )
@@ -141,13 +140,13 @@ fill :: (MonadIO m,Storable a,Writable w) => Buffer w a -> a -> m ()
 fill r a = writeWhole r (replicate (bufferSize r) a)
 
 -- |Index getter. Bounds checking is performed and returns 'Nothing' if out of bounds.
-(@?) :: (MonadIO m,Storable a,Readable r) => Buffer r a -> Word32 -> m (Maybe a)
+(@?) :: (MonadIO m,Storable a,Readable r) => Buffer r a -> Natural -> m (Maybe a)
 r @? i
   | i >= fromIntegral (bufferSize r) = pure Nothing
   | otherwise = fmap Just (r @! i)
 
 -- |Index getter. Unsafe version of '(@?)'.
-(@!) :: (MonadIO m,Storable a,Readable r) => Buffer r a -> Word32 -> m a
+(@!) :: (MonadIO m,Storable a,Readable r) => Buffer r a -> Natural -> m a
 r @! i = liftIO $ do
   glBindBuffer GL_ARRAY_BUFFER (bufferID r)
   p <- glMapBufferRange GL_ARRAY_BUFFER (fromIntegral $ bufferOffset r) (fromIntegral $ bufferSize r) GL_MAP_READ_BIT
@@ -156,13 +155,13 @@ r @! i = liftIO $ do
   pure a
 
 -- |Index setter. Bounds checking is performed and nothing is done if out of bounds.
-writeAt :: (MonadIO m,Storable a,Writable w) => Buffer w a -> Word32 -> a -> m ()
+writeAt :: (MonadIO m,Storable a,Writable w) => Buffer w a -> Natural -> a -> m ()
 writeAt r i a
   | i >= fromIntegral (bufferSize r) = pure ()
   | otherwise = writeAt' r i a
 
 -- |Index setter. Unsafe version of 'writeAt'.
-writeAt' :: (MonadIO m,Storable a,Writable w) => Buffer w a -> Word32 -> a -> m ()
+writeAt' :: (MonadIO m,Storable a,Writable w) => Buffer w a -> Natural -> a -> m ()
 writeAt' r i a = liftIO $ do
   glBindBuffer GL_ARRAY_BUFFER (bufferID r)
   p <- glMapBufferRange GL_ARRAY_BUFFER (fromIntegral $ bufferOffset r) (fromIntegral $ bufferSize r) GL_MAP_WRITE_BIT
