@@ -66,7 +66,7 @@ mkBufferWithRegions flags buildRegions = do
     built = runBuildBuffer buildRegions
     (bytes,_) = execRWS built (0,nullPtr) 0
 
--- |'Buffer's can have reads and writes. That typeclass makes implements all possible
+-- 'Buffer's can have reads and writes. That typeclass makes implements all possible
 -- cases.
 class BufferRW rw where
   bufferFlagsFromRW :: proxy rw -> GLenum
@@ -80,8 +80,6 @@ instance BufferRW RW where
 instance BufferRW W where
   bufferFlagsFromRW _ = GL_MAP_WRITE_BIT
 
--- |Create a new 'Buffer'. Through the 'BuildBuild type, you can yield new regions and embed them
--- in the type of your choice. The function returns that type.
 createBuffer :: forall a m rw. (BufferRW rw,MonadIO m,MonadResource m)
              => BuildBuffer rw a
              -> m a
@@ -90,19 +88,16 @@ createBuffer = fmap fst . mkBufferWithRegions (bufferFlagsFromRW (Proxy :: Proxy
 persistentCoherentBits :: GLbitfield
 persistentCoherentBits = 0
 
--- |A 'Buffer' is a GPU typed memory area. It can be pictured as a GPU array.
 data Buffer rw a = Buffer {
     bufferOffset :: Int -- offset in the memory of the buffer
   , bufferSize :: Int -- number of elements living in that region
   , bufferID :: GLuint -- buffer the region lays in
   } deriving (Eq,Show)
 
--- |Convenient type to build 'Buffer's.
 newtype BuildBuffer rw a = BuildBuffer {
     runBuildBuffer :: RWS (GLuint,Ptr ()) () Int a
   } deriving (Applicative,Functor,Monad)
 
--- |Create a new 'Buffer' by providing the number of wished elements.
 createRegion :: forall rw a. (Storable a) => Natural -> BuildBuffer rw (Buffer rw a)
 createRegion size = BuildBuffer $ do
     offset <- get
@@ -114,7 +109,6 @@ createRegion size = BuildBuffer $ do
       , bufferID = buffer
       }
 
--- |Read a whole 'Buffer'.
 readWhole :: (MonadIO m,Readable r,Storable a) => Buffer r a -> m [a]
 readWhole r = liftIO $ do
   glBindBuffer GL_ARRAY_BUFFER (bufferID r)
@@ -123,8 +117,6 @@ readWhole r = liftIO $ do
   _ <- glUnmapBuffer GL_ARRAY_BUFFER
   pure a
 
--- |Write the whole 'Buffer'. If values are missing, only the provided values will replace the
--- existing ones. If there are more values than the size of the 'Buffer', they are ignored.
 writeWhole :: (Foldable f,MonadIO m,Storable a,Writable w)
            => Buffer w a
            -> f a
@@ -135,17 +127,14 @@ writeWhole r values = liftIO $ do
   pokeArray (castPtr p) . take (bufferSize r) $ toList values
   () <$ glUnmapBuffer GL_ARRAY_BUFFER
 
--- |Fill a 'Buffer' with a value.
 fill :: (MonadIO m,Storable a,Writable w) => Buffer w a -> a -> m ()
 fill r a = writeWhole r (replicate (bufferSize r) a)
 
--- |Index getter. Bounds checking is performed and returns 'Nothing' if out of bounds.
 (@?) :: (MonadIO m,Storable a,Readable r) => Buffer r a -> Natural -> m (Maybe a)
 r @? i
   | i >= fromIntegral (bufferSize r) = pure Nothing
   | otherwise = fmap Just (r @! i)
 
--- |Index getter. Unsafe version of '(@?)'.
 (@!) :: (MonadIO m,Storable a,Readable r) => Buffer r a -> Natural -> m a
 r @! i = liftIO $ do
   glBindBuffer GL_ARRAY_BUFFER (bufferID r)
@@ -154,13 +143,11 @@ r @! i = liftIO $ do
   _ <- glUnmapBuffer GL_ARRAY_BUFFER
   pure a
 
--- |Index setter. Bounds checking is performed and nothing is done if out of bounds.
 writeAt :: (MonadIO m,Storable a,Writable w) => Buffer w a -> Natural -> a -> m ()
 writeAt r i a
   | i >= fromIntegral (bufferSize r) = pure ()
   | otherwise = writeAt' r i a
 
--- |Index setter. Unsafe version of 'writeAt'.
 writeAt' :: (MonadIO m,Storable a,Writable w) => Buffer w a -> Natural -> a -> m ()
 writeAt' r i a = liftIO $ do
   glBindBuffer GL_ARRAY_BUFFER (bufferID r)
